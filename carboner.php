@@ -1,7 +1,7 @@
 <?php
 /**
- * Plugin Name: Carboner
- * Description: Carboner est le plugin qui gère le formulaire de bilan carbone
+ * Plugin Name: Scoopy
+ * Description: Scoopy est le plugin qui gère le calendrier de l'avant
  * Plugin URI: https://virgile-prevalet.fr/
  * Author: Territoires Landscape Architects
  * Version: 1.0.0
@@ -20,7 +20,7 @@ function carboner_add(){
 
 //chargement du css
 
-add_shortcode('carboner','carboner_add');
+add_shortcode('Scoopy','carboner_add');
 
 
 //Gestion du shortcode
