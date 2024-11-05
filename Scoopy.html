@@ -4,9 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calendrier de l'Avent</title>
-    <link rel="stylesheet" href="styles.css">
     <style>
-        body {
+
+.jour-futur {
+    background-color: #d3d3d3; /* Couleur grisée pour les jours non accessibles */
+    cursor: not-allowed; /* Changer le curseur pour indiquer qu'ils ne sont pas cliquables */
+    opacity: 0.7;
+}
+           body {
             font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
@@ -20,17 +25,20 @@
         .calendar {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
-            grid-gap: 10px;
+            grid-gap: 20px;
             width: 100%;
             max-width: 600px;
         }
         .day {
+    margin-top: 15px;
             width: 100%;
             height: 0;
             padding-bottom: 100%;
             cursor: pointer;
             position: relative;
             background-color: #4CAF50;
+            background-image: radial-gradient(circle, white 1px, transparent 2px);
+            background-size: 10px 10px;
             color: white;
             display: flex;
             justify-content: center;
@@ -46,6 +54,7 @@
             margin-top: auto;
             z-index: 2;
             margin-bottom: auto;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
         }
         @keyframes swing {
             0% { transform: rotate(0deg); }
@@ -67,6 +76,17 @@
             0% { opacity: 1; transform: scale(1); }
             100% { opacity: 0; transform: scale(0.5); }
         }
+
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-10px); }
+        50% { transform: translateX(10px); }
+        75% { transform: translateX(-10px); }
+    }
+
+    .shake {
+        animation: shake 0.5s ease !important;
+    }
         .popup {
             position: fixed;
             top: 50%;
@@ -121,12 +141,14 @@
         }
         @media (max-width: 768px) {
             .calendar {
+		margin-top: 184vw;
                 grid-template-columns: repeat(3, 1fr);
                 max-width: 100%;
             }
         }
         @media (max-width: 480px) {
             .calendar {
+		margin-top: 446vw;
                 grid-template-columns: repeat(2, 1fr);
                 max-width: 100%;
             }
@@ -141,14 +163,14 @@
         }
 
         .horizontal-ribbon, .vertical-ribbon {
-            fill: #ff0000;
+            fill: #ec193e;
         }
     </style>
 </head>
 <body>
     <div class="calendar">
-        <div class="day" data-title="Jour 1" data-description="Description du jour 1" data-link="https://example.com/1"><span>1</span></div>
-        <div class="day" data-title="Jour 2" data-description="Description du jour 2" data-link="https://example.com/2"><span>2</span></div>
+        <div class="day" data-title="Fabriquer un nichoirs à oiseau" data-description="Découvrez cet article de la LPO Auvergne-Rhône-Alpes qui vous guide dans la construction et l’installation de nichoirs pour oiseaux. Un petit geste simple pour soutenir la biodiversité locale et protéger nos espèces." data-link="https://auvergne-rhone-alpes.lpo.fr/s-engager/en-tant-que-citoyen/les-petits-gestes/nichoirs-a-oiseaux/"><span>1</span></div>
+        <div class="day" data-title="L'application Pl@ntnet" data-description="Avec l'application Pl@ntNet, identifiez une plante à partir d'une photo et rejoignez un projet de sciences participatives sur la biodiversité végétale." data-link="https://plantnet.org/"><span>2</span></div>
         <div class="day" data-title="Jour 3" data-description="Description du jour 3" data-link="https://example.com/3"><span>3</span></div>
         <div class="day" data-title="Jour 4" data-description="Description du jour 4" data-link="https://example.com/4"><span>4</span></div>
         <div class="day" data-title="Jour 5" data-description="Description du jour 5" data-link="https://example.com/5"><span>5</span></div>
@@ -182,63 +204,140 @@
     </div>
 
     <script>
-        document.querySelectorAll('.day').forEach(day => {
-            day.addEventListener('click', () => {
-                const popup = document.querySelector('.popup');
-                const overlay = document.querySelector('.overlay');
-                popup.querySelector('h3').innerText = day.dataset.title;
-                popup.querySelector('p').innerText = day.dataset.description;
-                popup.querySelector('a').setAttribute('href', day.dataset.link);
 
-                popup.style.display = 'flex';
-                overlay.style.display = 'block';
+
+
+    document.querySelectorAll('.day').forEach(day => {
+const dayNumber = parseInt(day.innerText, 10);
+const today = new Date().getDate();
+
+
+    if (dayNumber > today) {
+        day.classList.add('jour-futur'); // Ajouter la classe pour les jours futurs
+    }
+        // Liste des couleurs
+        const colors = ['#88993E', '#477567', '#0a6162'];
+
+        // Sélection d'une couleur aléatoire
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+        // Application de la couleur de fond à chaque élément
+        day.style.backgroundColor = randomColor;
+
+        // Détermination de la couleur des rubans en fonction de la couleur de la case
+        let ribbonColor;
+        if (randomColor === '#477567') {
+            ribbonColor = '#778ca3';
+        } else if (randomColor === '#88993E') {
+            ribbonColor = '#f7b731';
+        } else {
+            ribbonColor = '#ec193e';
+        }
+
+        // Ajout des rubans
+        const svgNamespace = 'http://www.w3.org/2000/svg';
+        const ribbonSvg = document.createElementNS(svgNamespace, 'svg');
+        ribbonSvg.setAttribute('class', 'ribbon-svg');
+        ribbonSvg.setAttribute('viewBox', '0 0 100 100');
+        ribbonSvg.style.position = 'absolute';
+        ribbonSvg.style.top = '-20%'; // Positionner le SVG au-dessus de la case pour les boucles
+        ribbonSvg.style.left = '0';
+        ribbonSvg.style.width = '100%';
+        ribbonSvg.style.height = '120%'; // Augmenter la hauteur pour inclure les boucles
+        ribbonSvg.style.zIndex = '-2'; // Le ruban est derrière la case, y compris les ellipses
+
+        // Ruban horizontal (s'assurant qu'il reste centré)
+        const horizontalRibbon = document.createElementNS(svgNamespace, 'rect');
+        horizontalRibbon.setAttribute('x', '0');
+        horizontalRibbon.setAttribute('y', '45');
+        horizontalRibbon.setAttribute('width', '100');
+        horizontalRibbon.setAttribute('height', '10');
+        horizontalRibbon.style.fill = ribbonColor;
+
+        // Ruban vertical (augmenter la hauteur pour couvrir la case entière)
+        const verticalRibbon = document.createElementNS(svgNamespace, 'rect');
+        verticalRibbon.setAttribute('x', '45');
+        verticalRibbon.setAttribute('y', '0');
+        verticalRibbon.setAttribute('width', '10');
+        verticalRibbon.setAttribute('height', '130'); // Assurer qu'il couvre toute la hauteur de la case
+        verticalRibbon.style.fill = ribbonColor;
+
+        // Boucles du ruban (ellipses)
+        const leftLoop = document.createElementNS(svgNamespace, 'ellipse');
+        leftLoop.setAttribute('cx', '20'); // Déplacer de '25' à '20' pour décaler vers la gauche
+        leftLoop.setAttribute('cy', '10'); // Positionnement vertical au-dessus de la boîte
+        leftLoop.setAttribute('rx', '20'); // Rayon horizontal de l'ellipse
+        leftLoop.setAttribute('ry', '10'); // Rayon vertical de l'ellipse
+        leftLoop.style.fill = 'none'; // Remplissage transparent au centre
+        leftLoop.style.strokeWidth = '5'; // Épaisseur du contour pour simuler la boucle
+        leftLoop.style.stroke = ribbonColor; // Couleur du contour identique à la couleur du ruban
+        leftLoop.style.transform = 'rotate(16deg)';
+        leftLoop.style.transformOrigin = 'center'; // Faire pivoter autour du centre
+
+        const rightLoop = document.createElementNS(svgNamespace, 'ellipse');
+        rightLoop.setAttribute('cx', '80'); // Déplacer de '75' à '80' pour décaler vers la droite
+        rightLoop.setAttribute('cy', '10'); // Positionnement vertical au-dessus de la boîte
+        rightLoop.setAttribute('rx', '20'); // Rayon horizontal de l'ellipse
+        rightLoop.setAttribute('ry', '10'); // Rayon vertical de l'ellipse
+        rightLoop.style.fill = 'none'; // Remplissage transparent au centre
+        rightLoop.style.strokeWidth = '5'; // Épaisseur du contour pour simuler la boucle
+        rightLoop.style.stroke = ribbonColor; // Couleur du contour identique à la couleur du ruban
+        rightLoop.style.transform = 'rotate(-16deg)';
+        rightLoop.style.transformOrigin = 'center'; // Faire pivoter autour du centre
+
+        // Ajouter les éléments au SVG du ruban
+        ribbonSvg.appendChild(horizontalRibbon);
+        ribbonSvg.appendChild(verticalRibbon);
+        ribbonSvg.appendChild(leftLoop);
+        ribbonSvg.appendChild(rightLoop);
+
+        // Ajouter le ruban SVG derrière chaque case
+        day.style.position = 'relative';
+        day.insertBefore(ribbonSvg, day.firstChild);
+
+        // Gestion de l'événement de clic pour la popup
+           day.addEventListener('click', () => {
+                if (dayNumber <= today) {
+                    const popup = document.querySelector('.popup');
+                    const overlay = document.querySelector('.overlay');
+                    popup.querySelector('h3').innerText = day.dataset.title;
+                    popup.querySelector('p').innerText = day.dataset.description;
+                    popup.querySelector('a').setAttribute('href', day.dataset.link);
+
+                    popup.style.display = 'flex';
+                    overlay.style.display = 'block';
+                } else {
+                    // Faire bouger la case de gauche à droite
+                    day.classList.add('shake');
+                    setTimeout(() => {
+                        day.classList.remove('shake');
+                    }, 500);
+                }
             });
-
-            const svgNamespace = 'http://www.w3.org/2000/svg';
-            const ribbonSvg = document.createElementNS(svgNamespace, 'svg');
-            ribbonSvg.setAttribute('class', 'ribbon-svg');
-            ribbonSvg.setAttribute('viewBox', '0 0 100 100');
-
-            const horizontalRibbon = document.createElementNS(svgNamespace, 'rect');
-            horizontalRibbon.setAttribute('class', 'horizontal-ribbon');
-            horizontalRibbon.setAttribute('x', '0');
-            horizontalRibbon.setAttribute('y', '45');
-            horizontalRibbon.setAttribute('width', '100');
-            horizontalRibbon.setAttribute('height', '10');
-
-            const verticalRibbon = document.createElementNS(svgNamespace, 'rect');
-            verticalRibbon.setAttribute('class', 'vertical-ribbon');
-            verticalRibbon.setAttribute('x', '45');
-            verticalRibbon.setAttribute('y', '0');
-            verticalRibbon.setAttribute('width', '10');
-            verticalRibbon.setAttribute('height', '100');
-
-            ribbonSvg.appendChild(horizontalRibbon);
-            ribbonSvg.appendChild(verticalRibbon);
-            day.appendChild(ribbonSvg);
         });
 
-        document.querySelector('.close-btn').addEventListener('click', () => {
-            const popup = document.querySelector('.popup');
-            const overlay = document.querySelector('.overlay');
-            popup.classList.add('fade-out');
-            setTimeout(() => {
-                popup.style.display = 'none';
-                overlay.style.display = 'none';
-                popup.classList.remove('fade-out');
-            }, 500);
-        });
+    // Gestion de l'événement de fermeture pour la popup et l'overlay
+    document.querySelector('.close-btn').addEventListener('click', () => {
+        const popup = document.querySelector('.popup');
+        const overlay = document.querySelector('.overlay');
+        popup.classList.add('fade-out');
+        overlay.style.display = 'none';
+        setTimeout(() => {
+            popup.style.display = 'none';
+            popup.classList.remove('fade-out');
+        }, 500);
+    });
 
-        document.querySelector('.overlay').addEventListener('click', () => {
-            const popup = document.querySelector('.popup');
-            const overlay = document.querySelector('.overlay');
-            popup.classList.add('fade-out');
-            setTimeout(() => {
-                popup.style.display = 'none';
-                overlay.style.display = 'none';
-                popup.classList.remove('fade-out');
-            }, 500);
-        });
+    document.querySelector('.overlay').addEventListener('click', () => {
+        const popup = document.querySelector('.popup');
+        const overlay = document.querySelector('.overlay');
+        popup.classList.add('fade-out');
+        overlay.style.display = 'none';
+        setTimeout(() => {
+            popup.style.display = 'none';
+            popup.classList.remove('fade-out');
+        }, 500);
+    });
     </script>
 </body>
 </html>
